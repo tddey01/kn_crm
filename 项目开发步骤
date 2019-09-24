@@ -1,0 +1,121 @@
+第二部份 stark 组件
+
+    介绍
+          startk组件 是一个帮助开发者快速实现数据库表结构增删改查
+    目录
+        10s 中完成一张表的增删改查
+
+    前戏
+        1 django项目启动时  自定义执行某个py文件
+
+        2 单例模式
+
+        3 django路由分发的本质 include
+
+        提示
+            pre_luffy_stark.zip
+
+    开始
+      1 创建django project
+
+      2 创建基础业务表
+          app01/models
+              部门表  Depart
+              用户表  UserInfo
+
+          app02/models
+              主机表  Host
+
+      3 对以上的表中做成增删改查
+          a  分析
+            - 为每个表创建4个url
+            - 为每张表创建个视图函数
+
+            app01/models
+                部门表  Depart
+                      /app01/depart/list/
+                      /app01/depart/add/
+                      /app01/depart/edit/(\d+)/
+                      /app01/depart/del/(\d+)/
+
+
+               用户表  UserInfo
+                    /app01/UserInfo/list/
+                    /app01/UserInfo/add/
+                    /app01/UserInfo/edit/(\d+)/
+                    /app01/UserInfo/del/(\d+)/
+
+            app02/models
+                主机表  Host
+                    /app02/Host/list/
+                    /app02/Host/add/
+                    /app02/Host/edit/(\d+)/
+                    /app02/Host/del/(\d+)/
+
+
+              提示 建议app为前缀
+
+          b  为app中的每个model类自动穿古剑URL以及相关视图函数
+
+              - 动态生成URL
+
+              - 将视图提取到基类
+
+              - URL分发扩展 & 后缀
+
+              - 为URL设置别名
+
+              - URL别名进行重新的生成
+
+          c  定制页面显的示列
+              - 基本列表页面列的定制
+              - 未定义list_desplay字段的页面，默认显示对象
+              - 为list_display预留的钩子函数
+              - 为页面提供自定义显示的函数
+              - 应用
+
+          d 应用模板样式（Bootstrap）
+
+          e 列表添加分页功能
+
+          f 添加的功能
+
+            - 如何显示添加按钮
+
+            - 添加按钮的URL
+
+            - 添加页面进行添加数据
+
+          g 编辑功能
+            - 编辑按钮（删除按钮）
+            - 页面操作
+
+          h 删除
+
+      4 其他常用功能
+
+          a 排序
+
+          b 模糊搜索
+              - 实现思路
+                  在页面是设置form表单 搜索 义Get形式提交请求到后台 后台获取数据后进行筛选过滤
+                  后端获取到关键字之后 根据定义的列进行查找，（多列可以按照进行查询组合条件）
+              - Q
+
+          c 批量操作
+              - 添加checkbox列
+              - 生成批量操作的 ”按钮”
+
+          d 组合搜索
+             - 什么是组合搜索
+             - 如何实现组合搜索？
+                - 实现思路 根据字段找到其关联的数据： choice FK  M2M
+                - 第一步 配置
+                - 第二步 根据用户获取管理数据
+                - 第三步 根据用户获取管理数据 （含条件）
+                - 第四步 在页面上显示组合搜索的按钮
+                   - 将QuerySet和元组进行封装
+                - 第五步 为组合搜索按钮生成URL
+                    - 生成URL时 不影响其他组的条件
+                    - 添加筛选
+                    -
