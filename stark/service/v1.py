@@ -189,13 +189,24 @@ class StarkHandler(object):
             return "删除"
         return mark_safe('<a href="%s">删除</a>' % self.reverse_delete_url(pk=obj.pk))
 
+    def display_edit_del(self,obj=None, is_header=None):
+        if is_header:
+            return '操作'
+        tpl = '<a href="%s">编辑</a>  <a href="%s">删除</a>' %(
+            self.reverse_change_url(pk=obj.pk),self.reverse_delete_url(pk=obj.pk))
+        return mark_safe(tpl)
+
+
     def get_list_display(self):
         """
         获取页面上应该显示的列，预留的自定义扩展，例如：以后根据用户的不同显示不同的列
         :return:
         """
         value = []
-        value.extend(self.list_display)
+        if self.list_display:
+            value.extend(self.list_display)
+            value.append(StarkHandler.display_edit_del)
+
         return value
 
     per_page_count = 10
