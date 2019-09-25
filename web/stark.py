@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 from django import forms
 from django.core.exceptions import ValidationError
@@ -7,30 +7,31 @@ from django.conf.urls import url
 from django.shortcuts import HttpResponse, render, redirect
 from django.http import QueryDict
 from django.urls import reverse
-from stark.service.v1 import site, StarkHandler, get_choice_text, StarkModelForm, StarkForm
+from stark.service.v1 import site, StarkHandler, get_choice_text, StarkModelForm, StarkForm, Option
 from web import models
-from web.uilts.md5 import gen_md5
+from web.utils.md5 import gen_md5
 
 
 class SchoolHandler(StarkHandler):
-    # list_display = ['title',StarkHandler.display_edit,StarkHandler.display_del]
-    list_display = ['title',]
+    list_display = ['title']
+
 
 site.register(models.School, SchoolHandler)
 
 
 class DepartmentHandler(StarkHandler):
-    list_display = ['title',]
+    list_display = ['title', ]
 
 
-site.register(models.Department,DepartmentHandler)
+site.register(models.Department, DepartmentHandler)
 
 
 class UserInfoAddModelForm(StarkModelForm):
     confirm_password = forms.CharField(label='确认密码')
+
     class Meta:
         model = models.UserInfo
-        fields = ['name','password','confirm_password','nickname','gender','phone','email','depart','roles']
+        fields = ['name', 'password', 'confirm_password', 'nickname', 'gender', 'phone', 'email', 'depart', 'roles']
 
     def clean_confirm_password(self):
         password = self.cleaned_data['password']
@@ -44,10 +45,12 @@ class UserInfoAddModelForm(StarkModelForm):
         self.cleaned_data['password'] = gen_md5(password)
         return self.cleaned_data
 
+
 class UserInfoChangeModelForm(StarkModelForm):
     class Meta:
         model = models.UserInfo
-        fields = ['name','nickname','gender','phone','email','depart','roles']
+        fields = ['name', 'nickname', 'gender', 'phone', 'email', 'depart', 'roles']
+
 
 class ResetPasswordForm(StarkForm):
     password = forms.CharField(label='密码', widget=forms.PasswordInput)
@@ -75,6 +78,13 @@ class UserInfoHandler(StarkHandler):
         return mark_safe("<a href='%s'>重置密码</a>" % reset_url)
 
     list_display = ['nickname', get_choice_text('性别', 'gender'), 'phone', 'email', 'depart', display_reset_pwd]
+
+    search_list = ['nickname__contains', 'name__contains']
+
+    search_group = [
+        Option(field='gender'),
+        Option(field='depart'),
+    ]
 
     def get_model_form_class(self, is_add=False):
         if is_add:
