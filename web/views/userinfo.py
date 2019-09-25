@@ -1,14 +1,15 @@
-#!/usr/bin/env  python3
-# -*- coding: UTF-8 -*-
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.conf.urls import url
 from django.shortcuts import HttpResponse, render, redirect
-from stark.service.v1 import site, StarkHandler, get_choice_text, StarkModelForm, StarkForm, Option
+from stark.service.v1 import StarkHandler, get_choice_text, StarkModelForm, StarkForm, Option
 from web import models
 from web.utils.md5 import gen_md5
+
 
 class UserInfoAddModelForm(StarkModelForm):
     confirm_password = forms.CharField(label='确认密码')
@@ -90,7 +91,6 @@ class UserInfoHandler(StarkHandler):
             return render(request, 'stark/change.html', {'form': form})
         form = ResetPasswordForm(data=request.POST)
         if form.is_valid():
-            #  更新密码到数据库
             userinfo_object.password = form.cleaned_data['password']
             userinfo_object.save()
             return redirect(self.reverse_list_url())

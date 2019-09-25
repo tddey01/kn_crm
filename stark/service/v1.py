@@ -9,6 +9,7 @@ from django.shortcuts import HttpResponse, render, redirect
 from django.http import QueryDict
 from django import forms
 from django.db.models import Q
+from django.db.models import ForeignKey, ManyToManyField
 from stark.utils.pagination import Pagination
 from django.db.models import ForeignKey, ManyToManyField
 
@@ -60,7 +61,7 @@ def get_m2m_text(title, field):
     def inner(self, obj=None, is_header=None):
         if is_header:
             return title
-        queryset = getattr(obj, field).all()  # ManyToManyField 数据库获取方法
+        queryset = getattr(obj, field).all()
         text_list = [str(row) for row in queryset]
         return ','.join(text_list)
 
@@ -68,7 +69,6 @@ def get_m2m_text(title, field):
 
 
 class SearchGroupRow(object):
-
     def __init__(self, title, queryset_or_tuple, option, query_dict):
         """
 
@@ -126,7 +126,6 @@ class SearchGroupRow(object):
 
 
 class Option(object):
-
     def __init__(self, field, is_multi=False, db_condition=None, text_func=None, value_func=None):
         """
         :param field: 组合搜索关联的字段
@@ -191,7 +190,6 @@ class Option(object):
 
 
 class StarkModelForm(forms.ModelForm):
-
     def __init__(self, *args, **kwargs):
         super(StarkModelForm, self).__init__(*args, **kwargs)
         # 统一给ModelForm生成字段添加样式
@@ -370,7 +368,6 @@ class StarkHandler(object):
 
         # ########## 3. 获取排序 ##########
         order_list = self.get_order_list()
-        # 获取组合的条件
         # 获取组合的条件
         search_group_condition = self.get_search_group_condition(request)
         prev_queryset = self.get_queryset(request, *args, **kwargs)
