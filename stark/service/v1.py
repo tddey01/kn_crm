@@ -220,7 +220,12 @@ class StarkHandler(object):
 
     model_form_class = None
 
-    def get_model_form_class(self):
+    def get_model_form_class(self,is_add=False):
+        '''
+        定制添加和编页面的model)form的定制
+        :param is_add:
+        :return:
+        '''
         if self.model_form_class:
             return self.model_form_class
 
@@ -406,7 +411,7 @@ class StarkHandler(object):
         :param request:
         :return:
         """
-        model_form_class = self.get_model_form_class()
+        model_form_class = self.get_model_form_class(is_add=True)
         if request.method == 'GET':
             form = model_form_class()
             return render(request, 'stark/change.html', {'form': form})
@@ -428,7 +433,7 @@ class StarkHandler(object):
         if not current_change_object:
             return HttpResponse('要修改的数据不存在，请重新选择！')
 
-        model_form_class = self.get_model_form_class()
+        model_form_class = self.get_model_form_class(is_add=False)
         if request.method == 'GET':
             form = model_form_class(instance=current_change_object)
             return render(request, 'stark/change.html', {'form': form})
