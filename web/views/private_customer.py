@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 from stark.service.v1 import StarkHandler, get_m2m_text, get_choice_text, StarkModelForm
 from web import models
 
@@ -12,8 +14,15 @@ class PrivateCustomerModelForm(StarkModelForm):
 
 class PrivateCustomerHandler(StarkHandler):
     model_form_class = PrivateCustomerModelForm
+
+    def display_record(self, obj=None, is_header=None):
+        if is_header:
+            return '跟进记录'
+        record_url = reverse('stark:web_consultrecord_list', kwargs={'customer_id': obj.pk})
+        return mark_safe('<a target="_blank" href="%s">跟进记录</a>' % record_url)
+
     list_display = [StarkHandler.display_checkbox, 'name', 'qq', get_m2m_text('咨询课程', 'course'),
-                    get_choice_text('状态', 'status')]
+                    get_choice_text('状态', 'status'), display_record]
 
     def get_queryset(self, request, *args, **kwargs):
         current_user_id = request.session['user_info']['id']
