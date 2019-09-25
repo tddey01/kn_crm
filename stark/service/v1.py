@@ -58,7 +58,7 @@ def get_m2m_text(title, field):
     def inner(self, obj=None, is_header=None):
         if is_header:
             return title
-        queryset = getattr(obj, field).all()
+        queryset = getattr(obj, field).all()   # ManyToManyField 数据库获取方法
         text_list = [str(row) for row in queryset]
         return ','.join(text_list)
 
