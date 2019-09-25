@@ -9,9 +9,10 @@ from django.shortcuts import HttpResponse, render, redirect
 from django.http import QueryDict
 from django import forms
 from django.db.models import Q
+from django.db.models import ForeignKey, ManyToManyField
+from django.template.response import TemplateResponse
 
 from stark.utils.pagination import Pagination
-from django.db.models import ForeignKey, ManyToManyField
 
 
 def get_choice_text(title, field):
@@ -207,6 +208,11 @@ class StarkForm(forms.Form):
 
 
 class StarkHandler(object):
+    change_list_template = None
+    add_template = None
+    change_template = None
+    delete_template = None
+
     list_display = []
 
     def display_checkbox(self, obj=None, is_header=None):
@@ -430,7 +436,7 @@ class StarkHandler(object):
 
         return render(
             request,
-            'stark/changelist.html',
+            self.change_list_template or 'stark/changelist.html',
             {
                 'data_list': data_list,
                 'header_list': header_list,
@@ -463,13 +469,13 @@ class StarkHandler(object):
         model_form_class = self.get_model_form_class(is_add=True)
         if request.method == 'GET':
             form = model_form_class()
-            return render(request, 'stark/change.html', {'form': form})
+            return render(request, self.add_template or 'stark/change.html', {'form': form})
         form = model_form_class(data=request.POST)
         if form.is_valid():
             self.save(request, form, False, *args, **kwargs)
             # 在数据库保存成功后，跳转回列表页面(携带原来的参数)。
             return redirect(self.reverse_list_url())
-        return render(request, 'stark/change.html', {'form': form})
+        return render(request, self.add_template or 'stark/change.html', {'form': form})
 
     def change_view(self, request, pk, *args, **kwargs):
         """
@@ -485,13 +491,13 @@ class StarkHandler(object):
         model_form_class = self.get_model_form_class(is_add=False)
         if request.method == 'GET':
             form = model_form_class(instance=current_change_object)
-            return render(request, 'stark/change.html', {'form': form})
+            return render(request, self.change_template or 'stark/change.html', {'form': form})
         form = model_form_class(data=request.POST, instance=current_change_object)
         if form.is_valid():
             self.save(request, form, True, *args, **kwargs)
             # 在数据库保存成功后，跳转回列表页面(携带原来的参数)。
             return redirect(self.reverse_list_url())
-        return render(request, 'stark/change.html', {'form': form})
+        return render(request, self.change_template or 'stark/change.html', {'form': form})
 
     def delete_view(self, request, pk, *args, **kwargs):
         """
@@ -502,7 +508,7 @@ class StarkHandler(object):
         """
         origin_list_url = self.reverse_list_url()
         if request.method == 'GET':
-            return render(request, 'stark/delete.html', {'cancel': origin_list_url})
+            return render(request, self.delete_template or 'stark/delete.html', {'cancel': origin_list_url})
 
         self.model_class.objects.filter(pk=pk).delete()
         return redirect(origin_list_url)
