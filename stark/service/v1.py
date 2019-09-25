@@ -29,6 +29,7 @@ def get_choice_text(title, field):
 
     return inner
 
+
 def get_datetime_text(title, field, time_format='%Y-%m-%d'):
     """
     对于Stark组件中定义列时，定制时间格式的数据
@@ -46,6 +47,7 @@ def get_datetime_text(title, field, time_format='%Y-%m-%d'):
 
     return inner
 
+
 def get_m2m_text(title, field):
     """
     对于Stark组件中定义列时，显示m2m文本信息
@@ -58,13 +60,15 @@ def get_m2m_text(title, field):
     def inner(self, obj=None, is_header=None):
         if is_header:
             return title
-        queryset = getattr(obj, field).all()   # ManyToManyField 数据库获取方法
+        queryset = getattr(obj, field).all()  # ManyToManyField 数据库获取方法
         text_list = [str(row) for row in queryset]
         return ','.join(text_list)
 
     return inner
 
+
 class SearchGroupRow(object):
+
     def __init__(self, title, queryset_or_tuple, option, query_dict):
         """
 
@@ -122,6 +126,7 @@ class SearchGroupRow(object):
 
 
 class Option(object):
+
     def __init__(self, field, is_multi=False, db_condition=None, text_func=None, value_func=None):
         """
         :param field: 组合搜索关联的字段
@@ -186,6 +191,7 @@ class Option(object):
 
 
 class StarkModelForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         super(StarkModelForm, self).__init__(*args, **kwargs)
         # 统一给ModelForm生成字段添加样式
@@ -333,6 +339,9 @@ class StarkHandler(object):
         self.prev = prev
         self.request = None
 
+    def get_queryset(self, request, *args, **kwargs):
+        return self.model_class.objects
+
     def changelist_view(self, request, *args, **kwargs):
         """
         列表页面
@@ -362,8 +371,10 @@ class StarkHandler(object):
         # ########## 3. 获取排序 ##########
         order_list = self.get_order_list()
         # 获取组合的条件
+        # 获取组合的条件
         search_group_condition = self.get_search_group_condition(request)
-        queryset = self.model_class.objects.filter(conn).filter(**search_group_condition).order_by(*order_list)
+        prev_queryset = self.get_queryset(request, *args, **kwargs)
+        queryset = prev_queryset.filter(conn).filter(**search_group_condition).order_by(*order_list)
 
         # ########## 4. 处理分页 ##########
         all_count = queryset.count()

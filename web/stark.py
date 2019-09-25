@@ -29,3 +29,11 @@ site.register(models.Course,CourseHandler)
 
 from web.views.classList import ClasslistHandler
 site.register(models.ClassList,ClasslistHandler)
+
+
+from web.views.private_customer import PrivateCustomerHandler
+site.register(models.Customer,PrivateCustomerHandler,'priv')
+
+
+from web.views.public_customer import PublicCustomerHandler
+site.register(models.Customer,PublicCustomerHandler,'pub')
