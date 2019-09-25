@@ -106,6 +106,7 @@ class UserInfoHandler(StarkHandler):
             return render(request, 'stark/change.html', {'form': form})
         form = ResetPasswordForm(data=request.POST)
         if form.is_valid():
+            #  更新密码到数据库
             userinfo_object.password = form.cleaned_data['password']
             userinfo_object.save()
             return redirect(self.reverse_list_url())

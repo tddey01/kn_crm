@@ -121,7 +121,7 @@ class Option(object):
         if isinstance(field_object, ForeignKey) or isinstance(field_object, ManyToManyField):
             # FK和M2M,应该去获取其关联表中的数据： QuerySet
             db_condition = self.get_db_condition(request, *args, **kwargs)
-            return SearchGroupRow(title, field_object.rel.model.objects.filter(**db_condition), self, request.GET)
+            return SearchGroupRow(title, field_object.related_model.objects.filter(**db_condition), self, request.GET)
         else:
             # 获取choice中的数据：元组
             self.is_choice = True
