@@ -26,3 +26,6 @@ site.register(models.UserInfo, UserInfoHandler)
 
 from web.views.course import CourseHandler
 site.register(models.Course,CourseHandler)
+
+from web.views.classList import ClasslistHandler
+site.register(models.ClassList,ClasslistHandler)
