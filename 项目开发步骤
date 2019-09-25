@@ -170,4 +170,13 @@
          2.2.5 课程管理和代码拆分 [luffy_crm-8-课程管理和代码拆分.zip]
          2.2.6 班级管理
                 - 班级管理基本操作  [luffy_crm-9-班级管理基本操作和定制.zip]
-                - 
+                - 基于limit_choices_to关联FK或者M2M进行筛选
+                - 时间班级管理和是时间应用 (stark组件新增dateimepicker组件) [luffy_crm-9-时间班级管理和是时间应用.zip]
+                -
+         2.2.7 客户管理
+              -  公户
+                 - 公户基本管理 公户列表 录入客户信息 [luffy_crm-11-公户基本管理.zip]
+                 - 查看跟进记录  [luffy_crm-12-查看跟进记录.zip]
+                 - 申请到私户    [luffy_crm-13-查看跟进记录.zip]
+                 - 用户登录    [luffy_crm-13-用户登录.zip]
+              -  私户
