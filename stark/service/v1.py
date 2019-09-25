@@ -122,7 +122,7 @@ class Option(object):
         if isinstance(field_object, ForeignKey) or isinstance(field_object, ManyToManyField):
             # FK和M2M,应该去获取其关联表中的数据： QuerySet
             db_condition = self.get_db_condition(request, *args, **kwargs)
-            return SearchGroupRow(title, field_object.related_model.objects.filter(**db_condition), self, request.GET)
+            return SearchGroupRow(title, field_object.rel.model.objects.filter(**db_condition), self, request.GET)
         else:
             # 获取choice中的数据：元组
             self.is_choice = True
@@ -160,6 +160,15 @@ class StarkModelForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
 
 
+class StarkForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(StarkForm, self).__init__(*args, **kwargs)
+        # 统一给ModelForm生成字段添加样式
+        for name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
 class StarkHandler(object):
     list_display = []
 
@@ -189,13 +198,12 @@ class StarkHandler(object):
             return "删除"
         return mark_safe('<a href="%s">删除</a>' % self.reverse_delete_url(pk=obj.pk))
 
-    def display_edit_del(self,obj=None, is_header=None):
+    def display_edit_del(self, obj=None, is_header=None):
         if is_header:
             return '操作'
-        tpl = '<a href="%s">编辑</a>  <a href="%s">删除</a>' %(
-            self.reverse_change_url(pk=obj.pk),self.reverse_delete_url(pk=obj.pk))
+        tpl = '<a href="%s">编辑</a> <a href="%s">删除</a>' % (
+            self.reverse_change_url(pk=obj.pk), self.reverse_delete_url(pk=obj.pk))
         return mark_safe(tpl)
-
 
     def get_list_display(self):
         """
@@ -206,7 +214,6 @@ class StarkHandler(object):
         if self.list_display:
             value.extend(self.list_display)
             value.append(StarkHandler.display_edit_del)
-
         return value
 
     per_page_count = 10
@@ -220,12 +227,12 @@ class StarkHandler(object):
 
     model_form_class = None
 
-    def get_model_form_class(self,is_add=False):
-        '''
-        定制添加和编页面的model)form的定制
+    def get_model_form_class(self, is_add=False):
+        """
+        定制添加和编辑页面的model_form的定制
         :param is_add:
         :return:
-        '''
+        """
         if self.model_form_class:
             return self.model_form_class
 
@@ -496,13 +503,9 @@ class StarkHandler(object):
         """
         return self.get_url_name('delete')
 
-    def reverse_add_url(self):
-        """
-        生成带有原搜索条件的添加URL
-        :return:
-        """
-        name = "%s:%s" % (self.site.namespace, self.get_add_url_name,)
-        base_url = reverse(name)
+    def reverse_commons_url(self, name, *args, **kwargs):
+        name = "%s:%s" % (self.site.namespace, name,)
+        base_url = reverse(name, args=args, kwargs=kwargs)
         if not self.request.GET:
             add_url = base_url
         else:
@@ -511,6 +514,13 @@ class StarkHandler(object):
             new_query_dict['_filter'] = param
             add_url = "%s?%s" % (base_url, new_query_dict.urlencode())
         return add_url
+
+    def reverse_add_url(self, *args, **kwargs):
+        """
+        生成带有原搜索条件的添加URL
+        :return:
+        """
+        return self.reverse_commons_url(self.get_add_url_name, *args, **kwargs)
 
     def reverse_change_url(self, *args, **kwargs):
         """
@@ -519,16 +529,7 @@ class StarkHandler(object):
         :param kwargs:
         :return:
         """
-        name = "%s:%s" % (self.site.namespace, self.get_change_url_name,)
-        base_url = reverse(name, args=args, kwargs=kwargs)
-        if not self.request.GET:
-            add_url = base_url
-        else:
-            param = self.request.GET.urlencode()
-            new_query_dict = QueryDict(mutable=True)
-            new_query_dict['_filter'] = param
-            add_url = "%s?%s" % (base_url, new_query_dict.urlencode())
-        return add_url
+        return self.reverse_commons_url(self.get_change_url_name, *args, **kwargs)
 
     def reverse_delete_url(self, *args, **kwargs):
         """
@@ -537,16 +538,7 @@ class StarkHandler(object):
         :param kwargs:
         :return:
         """
-        name = "%s:%s" % (self.site.namespace, self.get_delete_url_name,)
-        base_url = reverse(name, args=args, kwargs=kwargs)
-        if not self.request.GET:
-            add_url = base_url
-        else:
-            param = self.request.GET.urlencode()
-            new_query_dict = QueryDict(mutable=True)
-            new_query_dict['_filter'] = param
-            add_url = "%s?%s" % (base_url, new_query_dict.urlencode())
-        return add_url
+        return self.reverse_commons_url(self.get_delete_url_name, *args, **kwargs)
 
     def reverse_list_url(self):
         """
