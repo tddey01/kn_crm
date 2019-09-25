@@ -9,6 +9,7 @@ from django.shortcuts import HttpResponse, render, redirect
 from django.http import QueryDict
 from django import forms
 from django.db.models import Q
+
 from stark.utils.pagination import Pagination
 from django.db.models import ForeignKey, ManyToManyField
 
@@ -443,9 +444,10 @@ class StarkHandler(object):
             }
         )
 
-    def save(self, form, is_update=False):
+    def save(self, request, form, is_update, *args, **kwargs):
         """
         在使用ModelForm保存数据之前预留的钩子方法
+        :param request:
         :param form:
         :param is_update:
         :return:
@@ -464,7 +466,7 @@ class StarkHandler(object):
             return render(request, 'stark/change.html', {'form': form})
         form = model_form_class(data=request.POST)
         if form.is_valid():
-            self.save(form, is_update=False)
+            self.save(request, form, False, *args, **kwargs)
             # 在数据库保存成功后，跳转回列表页面(携带原来的参数)。
             return redirect(self.reverse_list_url())
         return render(request, 'stark/change.html', {'form': form})
@@ -486,7 +488,7 @@ class StarkHandler(object):
             return render(request, 'stark/change.html', {'form': form})
         form = model_form_class(data=request.POST, instance=current_change_object)
         if form.is_valid():
-            self.save(form, is_update=False)
+            self.save(request, form, True, *args, **kwargs)
             # 在数据库保存成功后，跳转回列表页面(携带原来的参数)。
             return redirect(self.reverse_list_url())
         return render(request, 'stark/change.html', {'form': form})
