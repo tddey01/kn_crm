@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+import copy
 import functools
 from types import FunctionType
 from django.conf.urls import url
@@ -23,7 +24,7 @@ def get_choice_text(title, field):
     :return:
     """
 
-    def inner(self, obj=None, is_header=None):
+    def inner(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:
             return title
         method = "get_%s_display" % field
@@ -41,7 +42,7 @@ def get_datetime_text(title, field, time_format='%Y-%m-%d'):
     :return:
     """
 
-    def inner(self, obj=None, is_header=None):
+    def inner(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:
             return title
         datetime_value = getattr(obj, field)
@@ -59,7 +60,7 @@ def get_m2m_text(title, field):
     :return:
     """
 
-    def inner(self, obj=None, is_header=None):
+    def inner(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:
             return title
         queryset = getattr(obj, field).all()
@@ -215,7 +216,7 @@ class StarkHandler(object):
 
     list_display = []
 
-    def display_checkbox(self, obj=None, is_header=None):
+    def display_checkbox(self, obj=None, is_header=None, *args, **kwargs):
         """
         :param obj:
         :param is_header:
@@ -225,7 +226,7 @@ class StarkHandler(object):
             return "选择"
         return mark_safe('<input type="checkbox" name="pk" value="%s" />' % obj.pk)
 
-    def display_edit(self, obj=None, is_header=None):
+    def display_edit(self, obj=None, is_header=None, *args, **kwargs):
         """
         自定义页面显示的列（表头和内容）
         :param obj:
@@ -236,14 +237,15 @@ class StarkHandler(object):
             return "编辑"
         return mark_safe('<a href="%s">编辑</a>' % self.reverse_change_url(pk=obj.pk))
 
-    def display_del(self, obj=None, is_header=None):
+    def display_del(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:
             return "删除"
         return mark_safe('<a href="%s">删除</a>' % self.reverse_delete_url(pk=obj.pk))
 
-    def display_edit_del(self, obj=None, is_header=None):
+    def display_edit_del(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:
             return '操作'
+
         tpl = '<a href="%s">编辑</a> <a href="%s">删除</a>' % (
             self.reverse_change_url(pk=obj.pk), self.reverse_delete_url(pk=obj.pk))
         return mark_safe(tpl)
@@ -256,7 +258,7 @@ class StarkHandler(object):
         value = []
         if self.list_display:
             value.extend(self.list_display)
-            value.append(StarkHandler.display_edit_del)
+            value.append(type(self).display_edit_del)
         return value
 
     per_page_count = 10
@@ -410,14 +412,13 @@ class StarkHandler(object):
             header_list.append(self.model_class._meta.model_name)
 
         # 5.2 处理表的内容
-
         body_list = []
         for row in data_list:
             tr_list = []
             if list_display:
                 for key_or_func in list_display:
                     if isinstance(key_or_func, FunctionType):
-                        tr_list.append(key_or_func(self, row, is_header=False))
+                        tr_list.append(key_or_func(self, row, False, *args, **kwargs))
                     else:
                         tr_list.append(getattr(row, key_or_func))  # obj.gender
             else:
@@ -497,7 +498,7 @@ class StarkHandler(object):
         if form.is_valid():
             self.save(request, form, True, *args, **kwargs)
             # 在数据库保存成功后，跳转回列表页面(携带原来的参数)。
-            return redirect(self.reverse_list_url())
+            return redirect(self.reverse_list_url(*args, **kwargs))
         return render(request, self.change_template or 'stark/change.html', {'form': form})
 
     def delete_view(self, request, pk, *args, **kwargs):
@@ -507,7 +508,7 @@ class StarkHandler(object):
         :param pk:
         :return:
         """
-        origin_list_url = self.reverse_list_url()
+        origin_list_url = self.reverse_list_url(*args, **kwargs)
         if request.method == 'GET':
             return render(request, self.delete_template or 'stark/delete.html', {'cancel': origin_list_url})
 
