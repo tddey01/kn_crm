@@ -9,7 +9,6 @@ from django.shortcuts import HttpResponse, render, redirect
 from django.http import QueryDict
 from django import forms
 from django.db.models import Q
-from django.db.models import ForeignKey, ManyToManyField
 from stark.utils.pagination import Pagination
 from django.db.models import ForeignKey, ManyToManyField
 
