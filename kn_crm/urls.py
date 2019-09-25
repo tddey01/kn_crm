@@ -16,13 +16,13 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from stark.service.v1 import site
-# from web.views import account
+from web.views import account
 
 urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^stark/', site.urls),
     # url(r'^rbac/', include('rbac.urls', namespace='rbac')),
-    # url(r'^login/', account.login, name='login'),
-    # url(r'^logout/', account.logout, name='logout'),
-    # url(r'^index/', account.index, name='index')
+    url(r'^login/', account.login, name='login'),
+    url(r'^logout/', account.logout, name='logout'),
+    url(r'^index/', account.index, name='index')
 ]

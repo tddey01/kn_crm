@@ -52,7 +52,7 @@ class PublicCustomerHandler(StarkHandler):
         批量申请到私户
         :return:
         """
-        current_user_id = 4
+        current_user_id = request.session['user_info']['id']
         pk_list = request.POST.getlist('pk')
 
         private_customer_count = models.Customer.objects.filter(consultant_id=current_user_id, status=2).count()
