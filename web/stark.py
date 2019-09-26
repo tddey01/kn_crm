@@ -31,3 +31,9 @@ site.register(models.ConsultRecord, ConsultRecordHandler)
 
 from web.views.payment_record import PaymentRecordHandler
 site.register(models.PaymentRecord,PaymentRecordHandler)
+
+from web.views.check_payment_record import CheckPaymentRecordHandler
+site.register(models.PaymentRecord, CheckPaymentRecordHandler, 'check')
+
+from web.views.student import StudentHandler
+site.register(models.Student, StudentHandler)
