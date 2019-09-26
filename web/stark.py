@@ -37,3 +37,6 @@ site.register(models.PaymentRecord, CheckPaymentRecordHandler, 'check')
 
 from web.views.student import StudentHandler
 site.register(models.Student, StudentHandler)
+
+from web.views.score_record import ScoreHandler
+site.register(models.ScoreRecord, ScoreHandler)

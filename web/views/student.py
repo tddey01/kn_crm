@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
+
 from django.conf.urls import url
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 from stark.service.v1 import StarkHandler, get_choice_text, get_m2m_text, StarkModelForm, Option
 
 from web import models
@@ -14,8 +17,16 @@ class StudentModelForm(StarkModelForm):
 
 class StudentHandler(StarkHandler):
     model_form_class = StudentModelForm
+
+    def display_score(self, obj=None, is_header=None, *args, **kwargs):
+        if is_header:
+            return '积分管理'
+        'web_scorerecord_list'
+        record_url = reverse('stark:web_scorerecord_list', kwargs={'student_id': obj.pk})
+        return mark_safe('<a target="_blank" href="%s">%s</a>' % (record_url, obj.score))
+
     list_display = ['customer', 'qq', 'mobile', 'emergency_contract', get_m2m_text('已报班级', 'class_list'),
-                    get_choice_text('状态', 'student_status')]
+                    display_score, get_choice_text('状态', 'student_status')]
 
     def get_add_btn(self, request, *args, **kwargs):
         return None
