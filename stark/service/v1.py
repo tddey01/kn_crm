@@ -250,7 +250,7 @@ class StarkHandler(object):
             self.reverse_change_url(pk=obj.pk), self.reverse_delete_url(pk=obj.pk))
         return mark_safe(tpl)
 
-    def get_list_display(self):
+    def get_list_display(self, request, *args, **kwargs):
         """
         获取页面上应该显示的列，预留的自定义扩展，例如：以后根据用户的不同显示不同的列
         :return:
@@ -398,7 +398,7 @@ class StarkHandler(object):
         data_list = queryset[pager.start:pager.end]
 
         # ########## 5. 处理表格 ##########
-        list_display = self.get_list_display()
+        list_display = self.get_list_display(request, *args, **kwargs)
         # 5.1 处理表格的表头
         header_list = []
         if list_display:

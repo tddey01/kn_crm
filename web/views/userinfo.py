@@ -9,7 +9,7 @@ from django.shortcuts import HttpResponse, render, redirect
 from stark.service.v1 import StarkHandler, get_choice_text, StarkModelForm, StarkForm, Option
 from web import models
 from web.utils.md5 import gen_md5
-
+from .base import PermissionHandler
 
 class UserInfoAddModelForm(StarkModelForm):
     confirm_password = forms.CharField(label='确认密码')
@@ -54,7 +54,7 @@ class ResetPasswordForm(StarkForm):
         return self.cleaned_data
 
 
-class UserInfoHandler(StarkHandler):
+class UserInfoHandler(PermissionHandler,StarkHandler):
 
     def display_reset_pwd(self, obj=None, is_header=None):
         if is_header:

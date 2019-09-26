@@ -5,7 +5,7 @@ from django.conf.urls import url
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from stark.service.v1 import StarkHandler, get_choice_text, get_m2m_text, StarkModelForm, Option
-
+from .base import PermissionHandler
 from web import models
 
 
@@ -15,7 +15,7 @@ class StudentModelForm(StarkModelForm):
         fields = ['qq', 'mobile', 'emergency_contract', 'memo']
 
 
-class StudentHandler(StarkHandler):
+class StudentHandler(PermissionHandler,StarkHandler):
     model_form_class = StudentModelForm
 
     def display_score(self, obj=None, is_header=None, *args, **kwargs):
@@ -31,7 +31,7 @@ class StudentHandler(StarkHandler):
     def get_add_btn(self, request, *args, **kwargs):
         return None
 
-    def get_list_display(self):
+    def get_list_display(self,request,*args,**kwargs):
         value = []
         if self.list_display:
             value.extend(self.list_display)

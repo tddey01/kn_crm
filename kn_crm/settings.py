@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rbac.middlewares.rbac.RbacMiddleware',
 ]
 
 ROOT_URLCONF = 'kn_crm.urls'
@@ -145,18 +146,24 @@ LOGGING = {
         },
     },
 }
+# ######################### 权限配置 #################
 RBAC_USER_MODLE_CLASS = "web.models.UserInfo"
 PERMISSION_SESSION_KEY = "luffy_permission_url_list_key"
 MENU_SESSION_KEY = "luffy_permission_menu_key"
-VALID_URL_LIST = [
-    '/login/',
-    '/admin/.*'
-]
-
 
 AUTO_DISCOVER_EXCLUDE = [
     '/admin/.*',
     '/login/',
     '/logout/',
     '/index/',
+]
+
+NO_PERMISSION_LIST = [
+    '/index/',
+    '/logout/',
+]
+
+VALID_URL_LIST = [
+    '/login/',
+    '/admin/.*'
 ]

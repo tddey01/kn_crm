@@ -5,7 +5,7 @@ from django.shortcuts import HttpResponse
 from django import forms
 from stark.service.v1 import StarkHandler, get_choice_text, StarkModelForm
 from web import models
-
+from .base import PermissionHandler
 
 class PaymentRecordModelForm(StarkModelForm):
     class Meta:
@@ -13,7 +13,7 @@ class PaymentRecordModelForm(StarkModelForm):
         fields = ['pay_type', 'paid_fee', 'class_list', 'note']
 
 
-class StudentPaymentRecordModelForm(StarkModelForm):
+class StudentPaymentRecordModelForm(PermissionHandler,StarkModelForm):
     qq = forms.CharField(label='QQ号', max_length=32)
     mobile = forms.CharField(label='手机号', max_length=32)
     emergency_contract = forms.CharField(label='紧急联系人电话', max_length=32)

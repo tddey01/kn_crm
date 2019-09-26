@@ -5,6 +5,7 @@ from django.urls import reverse
 from stark.service.v1 import StarkHandler, get_datetime_text, get_m2m_text, StarkModelForm, Option
 from stark.forms.widgets import DateTimePickerInput
 from web import models
+from .base import PermissionHandler
 
 
 class ClassListModelForm(StarkModelForm):
@@ -17,7 +18,7 @@ class ClassListModelForm(StarkModelForm):
         }
 
 
-class ClassListHandler(StarkHandler):
+class ClassListHandler(PermissionHandler,StarkHandler):
 
     def display_course(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:

@@ -3,9 +3,10 @@
 from django.utils.safestring import mark_safe
 from django.conf.urls import url
 from django.shortcuts import HttpResponse, render
-from django.db import transaction # django 数据库加锁  导入事务模块
+from django.db import transaction  # django 数据库加锁  导入事务模块
 from stark.service.v1 import StarkHandler, get_choice_text, get_m2m_text, StarkModelForm
 from web import models
+from .base import PermissionHandler
 
 
 class PublicCustomerModelForm(StarkModelForm):
@@ -14,7 +15,7 @@ class PublicCustomerModelForm(StarkModelForm):
         exclude = ['consultant', ]
 
 
-class PublicCustomerHandler(StarkHandler):
+class PublicCustomerHandler(PermissionHandler, StarkHandler):
 
     def display_record(self, obj=None, is_header=None):
         if is_header:

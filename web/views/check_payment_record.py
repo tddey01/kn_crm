@@ -3,9 +3,9 @@
 
 from django.conf.urls import url
 from stark.service.v1 import StarkHandler, get_choice_text, get_datetime_text
+from .base import PermissionHandler
 
-
-class CheckPaymentRecordHandler(StarkHandler):
+class CheckPaymentRecordHandler(PermissionHandler,StarkHandler):
 
     order_list = ['-id','confirm_status']
 
@@ -14,7 +14,7 @@ class CheckPaymentRecordHandler(StarkHandler):
                     get_datetime_text('申请日期', 'apply_date'),
                     get_choice_text('状态', 'confirm_status'), 'consultant']
 
-    def get_list_display(self):
+    def get_list_display(self,request,*args,**kwargs):
         value = []
         if self.list_display:
             value.extend(self.list_display)
