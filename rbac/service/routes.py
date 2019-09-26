@@ -5,7 +5,8 @@ import re
 from collections import OrderedDict
 from django.conf import settings
 from django.utils.module_loading import import_string
-from django.urls import RegexURLResolver, RegexURLPattern
+from django.urls.resolvers import URLResolver    # 路由分发：URLResolver
+from django.urls.resolvers import URLPattern     # 非路由分发：URLPattern
 
 
 def check_url_exclude(url):
@@ -29,7 +30,7 @@ def recursion_urls(pre_namespace, pre_url, urlpatterns, url_ordered_dict):
     :return:
     """
     for item in urlpatterns:
-        if isinstance(item, RegexURLPattern):  # 非路由分发，讲路由添加到url_ordered_dict
+        if isinstance(item, URLPattern):  # 非路由分发，讲路由添加到url_ordered_dict
             if not item.name:
                 continue
 
@@ -37,7 +38,7 @@ def recursion_urls(pre_namespace, pre_url, urlpatterns, url_ordered_dict):
                 name = "%s:%s" % (pre_namespace, item.name)
             else:
                 name = item.name
-            url = pre_url + item._regex  # /rbac/user/edit/(?P<pk>\d+)/
+            url = pre_url + str(item.pattern)  # /rbac/user/edit/(?P<pk>\d+)/
             url = url.replace('^', '').replace('$', '')
 
             if check_url_exclude(url):
@@ -45,7 +46,7 @@ def recursion_urls(pre_namespace, pre_url, urlpatterns, url_ordered_dict):
 
             url_ordered_dict[name] = {'name': name, 'url': url}
 
-        elif isinstance(item, RegexURLResolver):  # 路由分发，递归操作
+        elif isinstance(item, URLResolver):  # 路由分发，递归操作
 
             if pre_namespace:
                 if item.namespace:
@@ -58,7 +59,7 @@ def recursion_urls(pre_namespace, pre_url, urlpatterns, url_ordered_dict):
                 else:
 
                     namespace = None
-            recursion_urls(namespace, pre_url + item.regex.pattern, item.url_patterns, url_ordered_dict)
+            recursion_urls(namespace, pre_url + str(item.pattern), item.url_patterns, url_ordered_dict)
 
 
 def get_all_url_dict():

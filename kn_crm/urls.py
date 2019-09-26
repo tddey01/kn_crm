@@ -21,7 +21,7 @@ from web.views import account
 urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^stark/', site.urls),
-    # url(r'^rbac/', include('rbac.urls', namespace='rbac')),
+    url(r'^rbac/', include('rbac.urls', namespace='rbac')),
     url(r'^login/', account.login, name='login'),
     url(r'^logout/', account.logout, name='logout'),
     url(r'^index/', account.index, name='index')

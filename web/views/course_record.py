@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 from django.conf.urls import url
-from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponse, render
 from django.utils.safestring import mark_safe
+from django.urls import reverse
+from django.forms.models import modelformset_factory
 from stark.service.v1 import StarkHandler, StarkModelForm, get_datetime_text
 from web import models
 
@@ -13,11 +15,25 @@ class CourseRecordModelForm(StarkModelForm):
         fields = ['day_num', 'teacher']
 
 
+class StudyRecordModelForm(StarkModelForm):
+    class Meta:
+        model = models.StudyRecord
+        fields = ['record', ]
+
+
 class CourseRecordHandler(StarkHandler):
     model_form_class = CourseRecordModelForm
 
+    def display_attendance(self, obj=None, is_header=None, *args, **kwargs):
+        if is_header:
+            return '考勤'
+        name = "%s:%s" % (self.site.namespace, self.get_url_name('attendance'),)
+        attendance_url = reverse(name, kwargs={'course_record_id': obj.pk})
+        tpl = '<a target="_blank" href="%s">考勤</a>' % attendance_url
+        return mark_safe(tpl)
+
     list_display = [StarkHandler.display_checkbox, 'class_object', 'day_num', 'teacher',
-                    get_datetime_text('时间', 'date')]
+                    get_datetime_text('时间', 'date'), display_attendance]
 
     def display_edit_del(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:
@@ -36,6 +52,9 @@ class CourseRecordHandler(StarkHandler):
                 name=self.get_change_url_name),
             url(r'^delete/(?P<class_id>\d+)/(?P<pk>\d+)/$', self.wrapper(self.delete_view),
                 name=self.get_delete_url_name),
+
+            url(r'^attendance/(?P<course_record_id>\d+)/$', self.wrapper(self.attendance_view),
+                name=self.get_url_name('attendance')),
         ]
         patterns.extend(self.extra_urls())
         return patterns
@@ -79,3 +98,24 @@ class CourseRecordHandler(StarkHandler):
 
     action_multi_init.text = '批量初始化考勤'
     action_list = [action_multi_init, ]
+
+    def attendance_view(self, request, course_record_id, *args, **kwargs):
+        """
+        考勤的批量操作
+        :param request:
+        :param course_record_id:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        study_record_object_list = models.StudyRecord.objects.filter(course_record_id=course_record_id)
+        study_model_formset = modelformset_factory(models.StudyRecord, form=StudyRecordModelForm, extra=0)
+
+        if request.method == 'POST':
+            formset = study_model_formset(queryset=study_record_object_list, data=request.POST)
+            if formset.is_valid():
+                formset.save()
+            return render(request, 'attendance.html', {'formset': formset})
+
+        formset = study_model_formset(queryset=study_record_object_list)
+        return render(request, 'attendance.html', {'formset': formset})

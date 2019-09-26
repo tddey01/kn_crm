@@ -145,7 +145,7 @@ LOGGING = {
         },
     },
 }
-
+RBAC_USER_MODLE_CLASS = "web.models.UserInfo"
 PERMISSION_SESSION_KEY = "luffy_permission_url_list_key"
 MENU_SESSION_KEY = "luffy_permission_menu_key"
 VALID_URL_LIST = [
@@ -153,6 +153,10 @@ VALID_URL_LIST = [
     '/admin/.*'
 ]
 
+
 AUTO_DISCOVER_EXCLUDE = [
-    '/admin/.*'
+    '/admin/.*',
+    '/login/',
+    '/logout/',
+    '/index/',
 ]

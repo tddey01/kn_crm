@@ -5,6 +5,7 @@ from django.contrib import admin
 from rbac.views import role
 from rbac.views import user
 from rbac.views import menu
+app_name = 'rbac'
 
 urlpatterns = [
 
