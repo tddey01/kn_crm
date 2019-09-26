@@ -27,3 +27,7 @@ site.register(models.Customer, PrivateCustomerHandler, 'priv')
 
 from web.views.consult_record import ConsultRecordHandler
 site.register(models.ConsultRecord, ConsultRecordHandler)
+
+
+from web.views.payment_record import PaymentRecordHandler
+site.register(models.PaymentRecord,PaymentRecordHandler)
