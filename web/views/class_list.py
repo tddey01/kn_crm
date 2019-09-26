@@ -7,7 +7,6 @@ from stark.forms.widgets import DateTimePickerInput
 from web import models
 from .base import PermissionHandler
 
-
 class ClassListModelForm(StarkModelForm):
     class Meta:
         model = models.ClassList

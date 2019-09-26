@@ -1,11 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 from django.conf.urls import url
 from django.shortcuts import HttpResponse
 from django import forms
 from stark.service.v1 import StarkHandler, get_choice_text, StarkModelForm
 from web import models
+
 from .base import PermissionHandler
+
 
 class PaymentRecordModelForm(StarkModelForm):
     class Meta:
@@ -13,7 +15,7 @@ class PaymentRecordModelForm(StarkModelForm):
         fields = ['pay_type', 'paid_fee', 'class_list', 'note']
 
 
-class StudentPaymentRecordModelForm(PermissionHandler,StarkModelForm):
+class StudentPaymentRecordModelForm(StarkModelForm):
     qq = forms.CharField(label='QQ号', max_length=32)
     mobile = forms.CharField(label='手机号', max_length=32)
     emergency_contract = forms.CharField(label='紧急联系人电话', max_length=32)
@@ -27,7 +29,7 @@ class PaymentRecordHandler(StarkHandler):
     list_display = [get_choice_text('缴费类型', 'pay_type'), 'paid_fee', 'class_list', 'consultant',
                     get_choice_text('状态', 'confirm_status')]
 
-    def get_list_display(self):
+    def get_list_display(self,request,*args,**kwargs):
         """
         获取页面上应该显示的列，预留的自定义扩展，例如：以后根据用户的不同显示不同的列
         :return:

@@ -8,13 +8,14 @@ from stark.service.v1 import StarkHandler, StarkModelForm
 from web import models
 from .base import PermissionHandler
 
+
 class ConsultRecordModelForm(StarkModelForm):
     class Meta:
         model = models.ConsultRecord
         fields = ['note', ]
 
 
-class ConsultRecordHandler(PermissionHandler,StarkHandler):
+class ConsultRecordHandler(PermissionHandler, StarkHandler):
     change_list_template = 'consult_record.html'
     model_form_class = ConsultRecordModelForm
 

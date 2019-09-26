@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 from django.shortcuts import render, HttpResponse, redirect
 from web import models
@@ -16,7 +16,7 @@ def login(request):
         return render(request, 'login.html')
 
     user = request.POST.get('user')
-    pwd = gen_md5(request.POST.get('pwd',''))
+    pwd = gen_md5(request.POST.get('pwd', ''))
 
     # 根据用户名和密码去用户表中获取用户对象
     user = models.UserInfo.objects.filter(name=user, password=pwd).first()
@@ -24,9 +24,11 @@ def login(request):
         return render(request, 'login.html', {'msg': '用户名或密码错误'})
     request.session['user_info'] = {'id': user.id, 'nickname': user.nickname}
 
+    # 用户权限信息的初始化
     init_permission(user, request)
 
     return redirect('/index/')
+
 
 def logout(request):
     """
@@ -40,4 +42,4 @@ def logout(request):
 
 
 def index(request):
-    return render(request,'index.html')
+    return render(request, 'index.html')

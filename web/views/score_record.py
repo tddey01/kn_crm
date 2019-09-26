@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 from django.conf.urls import url
 from stark.service.v1 import StarkHandler, StarkModelForm
@@ -12,7 +12,7 @@ class ScoreModelForm(StarkModelForm):
         fields = ['content', 'score']
 
 
-class ScoreHandler(PermissionHandler,StarkHandler):
+class ScoreHandler(PermissionHandler, StarkHandler):
     list_display = ['content', 'score', 'user']
     model_form_class = ScoreModelForm
 
@@ -24,7 +24,7 @@ class ScoreHandler(PermissionHandler,StarkHandler):
         patterns.extend(self.extra_urls())
         return patterns
 
-    def get_list_display(self,request,*args,**kwargs):
+    def get_list_display(self, request, *args, **kwargs):
         value = []
         if self.list_display:
             value.extend(self.list_display)

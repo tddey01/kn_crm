@@ -11,6 +11,7 @@ from web import models
 from web.utils.md5 import gen_md5
 from .base import PermissionHandler
 
+
 class UserInfoAddModelForm(StarkModelForm):
     confirm_password = forms.CharField(label='确认密码')
 
@@ -54,9 +55,9 @@ class ResetPasswordForm(StarkForm):
         return self.cleaned_data
 
 
-class UserInfoHandler(PermissionHandler,StarkHandler):
+class UserInfoHandler(PermissionHandler, StarkHandler):
 
-    def display_reset_pwd(self, obj=None, is_header=None):
+    def display_reset_pwd(self, obj=None, is_header=None, *args, **kwargs):
         if is_header:
             return '重置密码'
         reset_url = self.reverse_commons_url(self.get_url_name('reset_pwd'), pk=obj.pk)
@@ -71,7 +72,7 @@ class UserInfoHandler(PermissionHandler,StarkHandler):
         Option(field='depart'),
     ]
 
-    def get_model_form_class(self, is_add=False):
+    def get_model_form_class(self, is_add, request, pk, *args, **kwargs):
         if is_add:
             return UserInfoAddModelForm
         return UserInfoChangeModelForm
