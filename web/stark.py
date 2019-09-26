@@ -40,3 +40,6 @@ site.register(models.Student, StudentHandler)
 
 from web.views.score_record import ScoreHandler
 site.register(models.ScoreRecord, ScoreHandler)
+
+from web.views.course_record import CourseRecordHandler
+site.register(models.CourseRecord, CourseRecordHandler)
